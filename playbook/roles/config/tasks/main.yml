@@ -1,5 +1,4 @@
 # Configure device mapper. 
-# Somewhere here it needs to add checking if lv configured correctly
 ---
 - name: Check if docker starts
   become: yes
@@ -21,7 +20,6 @@
 - name: Clean up /var/lib/docker
   become: yes
   shell: rm -r /var/lib/docker/image /var/lib/docker/containers /var/lib/docker/network /var/lib/docker/tmp /var/lib/docker/trust /var/lib/docker/volumes /var/lib/docker/devicemapper
-# Possible to move to handlers:
 - name: Reload daemon
   become: yes
   command: systemctl daemon-reload

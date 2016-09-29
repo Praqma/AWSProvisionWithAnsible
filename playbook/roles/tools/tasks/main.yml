@@ -1,6 +1,3 @@
-# Specific for Volvo:
-# - name: Set proxy to yum:
-#   shell: sudo echo "proxy=http://proxy.vtec.volvo.se:8080" >> /etc/yum.conf
 ---
 - name: Set new repos to yum docker repo
   become: yes
@@ -31,17 +28,3 @@
 - name: Start docker
   service: name=docker state=started
   become: yes
-# TODO: check if everything installed correctly
-
-# Specific set for Volvo:
-# 
-# - name: Docker proxy configuration
-#   shell: 'sudo mkdir /etc/systemd/system/docker.service.d'
-#   lineinfile: dest=/etc/systemd/system/docker.service.d/http-proxy.conf
-#               insertafter=EOF
-#               line={{item.line}}
-#   with_items:       
-#     - "[Service]""
-#     - "Environment="HTTP_PROXY=http://proxy.vtec.volvo.se:8080/" "HTTPS_PROXY=proxy.vtec.volvo.se:8080" "NO_PROXY=localhost,127.0.0.1,*.volvo.com,*.volvo.se,*.volvo.net""
-#
-#  systemd: state=restarted daemon_reload: yes name=docker
