@@ -11,7 +11,7 @@ Here is Ansible setup helps you prepare your AWS RHEL 7 instance to run up Jenki
 * Create an AWS Red Hat Enterprise Linux 7.2 7.2 instance. Create an EBS volume needed capacity in the same region.
 * Attach the volume to the instance.
 * Create a pem file or say AWS to use existed one.
-* Log in to the instance, set a root user (do sudo -s). Go to /etc/sudoers and set requiretty option to false (!requiretty). Connection to aws goes with ec2-user, but installation and configuration commands we need to execute under sudo. By default, sudo requires tty, but ansible connects to the instance without terminal. So we need to disable this option.
+* Log in to the instance, set root user (do sudo -s). Go to /etc/sudoers and set requiretty option to false (!requiretty). In ansible.cfg the pipelining option turned on. Enabling pipelining reduces the number of SSH operations required to execute a module on the remote server, by executing many ansible modules without actual file transfer. This can result in a very significant performance improvement when enabled, however when using “sudo:” operations you must first disable ‘requiretty’ in /etc/sudoers on all managed hosts.   
 * Make sure the additional EBS device has /dev/xvdf path, if not change variable pv1 in playbook/lv/vars/main. If you want to use more devices create new variables there and add those variables to playbook/lv/tasks. 
 * Create a tag for tha instance. For example ansible-test. Set this tag to site.yml file in the hosts parametr like tag_<your tag>
 * Make sure the instances security group has opened SSH port and open TCP port for all inbound traffic.
@@ -22,7 +22,7 @@ Create a aws_keys file to the inventory folder. Set there your AWS account detai
  ```
  export AWS_ACCESS_KEY_ID='YOURKEYS'
  export AWS_SECRET_ACCESS_KEY='YOURSECRETKEYS'
- export EC2_REGION='us-west-2'
+ export EC2_REGION='your-region'
 ```
 Copy your *.pem file to the project root directory. Go to provision.sh and change the name of pem file.
 Run ansible provisioning:
