@@ -6,7 +6,7 @@ set -o pipefail
 
 # Make sure SSH knows to use the correct pem. 
 # Set here your pem file to connect to aws 
-ssh-add aws.pem
+ssh-add docker.pem
 ssh-add -l
 # Load the AWS keys.
 # Create aws_keys file. In the file you will export AWS keys in the environment
