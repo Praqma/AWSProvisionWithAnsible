@@ -1,0 +1,37 @@
+- name: Install lvm tool
+  become: yes
+  yum: name=lvm2*
+- name: Create new volume group
+  become: yes
+  lvg: vg={{ vgroup }} pvs={{ pv1 }}
+- name: Create jenkins LV
+  become: yes
+  lvol: vg={{ vgroup }} lv=jenkins-home size=15%VG opts="--wipesignatures y" 
+- name: Create docker data LV
+  become: yes
+  lvol: vg={{ vgroup }} lv=docker-data size=10%VG opts="--wipesignatures y"
+- name: Create thinpoolmeta LV
+  become: yes
+  lvol: vg={{ vgroup }} lv=thinpoolmeta size=1%VG opts="--wipesignatures y" 
+- name: Create thinpool
+  become: yes
+  lvol: vg={{ vgroup }} lv=thinpool size=70%VG opts="--wipesignatures y" 
+- name: Convert docker/thinpool to the thinpool
+  become: yes
+  shell: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
+  when: convert
+- name: Set a rule for the thinpool
+  become: yes
+  lineinfile: dest=/etc/lvm/profile/docker-thinpool.profile
+              state=present
+              create=yes
+              insertafter=EOF
+              line="activation {\n thin_pool_autoextend_threshold=80\n thin_pool_autoextend_percent=20 \n}" 
+    
+- name: Apply the rule
+  become: yes
+  shell: lvchange --metadataprofile docker-thinpool docker/thinpool
+- name: Create a filesystem for jenkins-home and docker-data
+  become: yes
+  filesystem: fstype=ext4 dev=/dev/docker/jenkins-home
+  filesystem: fstype=ext4 dev=/dev/docker/docker-data

@@ -1,0 +1,47 @@
+# Specific for Volvo:
+# - name: Set proxy to yum:
+#   shell: sudo echo "proxy=http://proxy.vtec.volvo.se:8080" >> /etc/yum.conf
+---
+- name: Set new repos to yum docker repo
+  become: yes
+  lineinfile: dest=/etc/yum.repos.d/docker.repo
+              state=present
+              create=yes
+              insertafter=EOF
+              line={{ item }}
+  with_items:
+    - "[dockerrepo]"
+    - "name=Docker Repository"
+    - "baseurl=https://yum.dockerproject.org/repo/main/centos/7"
+    - "enabled=1"
+    - "gpgcheck=1"
+    - "gpgkey=https://yum.dockerproject.org/gpg"
+- name: Yum update
+  become: yes
+  yum: name=* state=latest
+- name: Install git
+  become: yes
+  yum: name=git
+- name: Install docker
+  become: yes
+  yum: name=docker-engine
+- name: Install docker-compose
+  become: yes
+  shell: 'curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > docker-compose && sudo mv docker-compose /usr/local/bin/ && chmod ugo+rx /usr/local/bin/docker-compose'
+- name: Start docker
+  service: name=docker state=started
+  become: yes
+# TODO: check if everything installed correctly
+
+# Specific set for Volvo:
+# 
+# - name: Docker proxy configuration
+#   shell: 'sudo mkdir /etc/systemd/system/docker.service.d'
+#   lineinfile: dest=/etc/systemd/system/docker.service.d/http-proxy.conf
+#               insertafter=EOF
+#               line={{item.line}}
+#   with_items:       
+#     - "[Service]""
+#     - "Environment="HTTP_PROXY=http://proxy.vtec.volvo.se:8080/" "HTTPS_PROXY=proxy.vtec.volvo.se:8080" "NO_PROXY=localhost,127.0.0.1,*.volvo.com,*.volvo.se,*.volvo.net""
+#
+#  systemd: state=restarted daemon_reload: yes name=docker

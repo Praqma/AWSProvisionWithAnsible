@@ -1,0 +1,20 @@
+# For VM Volvo specific to set proxyit can be:
+# - hosts: all
+#   tasks:
+#     - name: Set proxy     
+#     lineinfile: dest=~/.bashrc
+#                 insertafter=EOF
+#                 line="{{ item }}"
+#     with_items:
+#         - "export http_proxy="http://proxy.vtec.volvo.se:8080"/n
+#         - "export https_proxy="http://proxy.vtec.volvo.se:8080"
+#         - "export no_proxy="localhost,127.0.0.1,.volvo.com,.volvo.se,.volvo.net"
+#         - "umask 022"  # This one is important because we will copy files into containers and they have to be readable
+- hosts: tag_ansible_test3
+  user: ec2-user
+  sudo: true
+  roles: 
+    - tools
+    - lv
+    - config
+    - user

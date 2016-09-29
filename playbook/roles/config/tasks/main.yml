@@ -1,0 +1,44 @@
+# Configure device mapper. 
+# Somewhere here it needs to add checking if lv configured correctly
+---
+- name: Check if docker starts
+  become: yes
+  command: docker info 
+- name: Stop docker service
+  become: yes
+  command: systemctl stop docker
+- name: Configure docker to use new device driver
+  become: yes
+  lineinfile: dest=/etc/systemd/system/docker.service.d/docker.conf
+              state=present
+              create=yes
+              insertafter=EOF
+              line={{ item }}
+  with_items:
+    - "[Service]"
+    - "ExecStart="
+    - "ExecStart=/usr/bin/dockerd --debug --storage-driver=devicemapper --storage-opt dm.thinpooldev=/dev/mapper/docker-thinpool --storage-opt dm.use_deferred_removal=true"
+- name: Clean up /var/lib/docker
+  become: yes
+  shell: rm -r /var/lib/docker/image /var/lib/docker/containers /var/lib/docker/network /var/lib/docker/tmp /var/lib/docker/trust /var/lib/docker/volumes /var/lib/docker/devicemapper
+# Possible to move to handlers:
+- name: Reload daemon
+  become: yes
+  command: systemctl daemon-reload
+- name: Start docker
+  become: yes
+  command: systemctl start docker
+- name: Mount docker-data disk to /var/lib/docker
+  become: yes
+  mount: 
+    name: /var/lib/docker
+    src: /dev/docker/docker-data
+    fstype: ext4
+    state: mounted
+- name: Mount jenkins-home disk to the /home/jenkins
+  become: yes
+  mount: 
+    name: /home/jenkins
+    src: /dev/docker/jenkins-home
+    state: mounted
+    fstype: ext4

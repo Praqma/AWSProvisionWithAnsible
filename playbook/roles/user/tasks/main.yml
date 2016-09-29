@@ -1,0 +1,21 @@
+- name: Create user jenkins
+  user: name=jenkins groups=1000,docker home=/home/jenkins shell=/bin/bash uid=1000 generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa append=yes
+- name: Change ownship for /home/jenkins
+  become: yes
+  shell: chown -R jenkins:jenkins /home/jenkins
+- name: Restart docker
+  become: yes
+  service: name=docker state=restarted
+#- name: Set proxy     
+#  become: yes
+#  become_user: {{ user }} 
+#  lineinfile: dest=~/.bashrc
+#              nsertafter=EOF
+#              line="{{ item }}"
+#  with_items:
+#         - "export http_proxy="http://proxy.vtec.volvo.se:8080"/n
+#         - "export https_proxy="http://proxy.vtec.volvo.se:8080"
+#         - "export no_proxy="localhost,127.0.0.1,.volvo.com,.volvo.se,.volvo.net"
+#         - "umask 022"  # This one is important because we will copy files into containers and they have to be readable
+#- name; Apply changes
+#  shell: source ~/.bashrc
