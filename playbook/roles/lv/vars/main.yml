@@ -1,4 +1,4 @@
-pv1: "/dev/xvdf"
+pv1: "/dev/xvdb"
 vgroup: "docker"
 jenkins_home: "/home/jenkins"
 convert: "true"

@@ -17,15 +17,9 @@
     - "[Service]"
     - "ExecStart="
     - "ExecStart=/usr/bin/dockerd --debug --storage-driver=devicemapper --storage-opt dm.thinpooldev=/dev/mapper/docker-thinpool --storage-opt dm.use_deferred_removal=true"
-- name: Clean up /var/lib/docker
+- name: remove /var/lib/docker
   become: yes
-  shell: rm -r /var/lib/docker/image /var/lib/docker/containers /var/lib/docker/network /var/lib/docker/tmp /var/lib/docker/trust /var/lib/docker/volumes /var/lib/docker/devicemapper
-- name: Reload daemon
-  become: yes
-  command: systemctl daemon-reload
-- name: Start docker
-  become: yes
-  command: systemctl start docker
+  file: path=/var/lib/docker state=absent
 - name: Mount docker-data disk to /var/lib/docker
   become: yes
   mount: 
@@ -40,3 +34,9 @@
     src: /dev/docker/jenkins-home
     state: mounted
     fstype: ext4
+- name: Reload daemon
+  become: yes
+  command: systemctl daemon-reload
+- name: Start docker
+  become: yes
+  command: systemctl start docker

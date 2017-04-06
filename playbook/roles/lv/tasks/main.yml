@@ -18,7 +18,7 @@
   lvol: vg={{ vgroup }} lv=thinpool size=70%VG opts="--wipesignatures y" 
 - name: Convert docker/thinpool to the thinpool
   become: yes
-  shell: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
+  shell: lvconvert -y --zero n --chunksize 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
   when: convert
 - name: Set a rule for the thinpool
   become: yes
@@ -31,7 +31,9 @@
 - name: Apply the rule
   become: yes
   shell: lvchange --metadataprofile docker-thinpool docker/thinpool
-- name: Create a filesystem for jenkins-home and docker-data
+- name: Create a filesystem for jenkins-home
   become: yes
   filesystem: fstype=ext4 dev=/dev/docker/jenkins-home
+- name: Create a filesystem for docker-data
+  become: yes
   filesystem: fstype=ext4 dev=/dev/docker/docker-data

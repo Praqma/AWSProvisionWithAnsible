@@ -24,7 +24,10 @@
   yum: name=docker-engine
 - name: Install docker-compose
   become: yes
-  shell: 'curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > docker-compose && sudo mv docker-compose /usr/local/bin/ && chmod ugo+rx /usr/local/bin/docker-compose'
+  get_url: 
+      url : https://github.com/docker/compose/releases/download/1.7.0/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+      dest: /usr/local/bin/docker-compose
+      mode: 'u+x,g+x'
 - name: Start docker
   service: name=docker state=started
   become: yes

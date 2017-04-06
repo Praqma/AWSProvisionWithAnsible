@@ -1,4 +1,4 @@
-- hosts: tag_ansible_test
+- hosts: ansible_test
   user: ec2-user
   sudo: true
   roles: 
