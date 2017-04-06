@@ -29,3 +29,5 @@ Run ansible provisioning:
 ```
 ./provision.sh
 ```
+
+Please note, these scripts are based on this [article](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/#configure-direct-lvm-mode-for-production)
