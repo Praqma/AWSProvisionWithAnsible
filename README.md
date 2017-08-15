@@ -10,7 +10,7 @@ Here is Ansible setup helps you prepare your AWS RHEL 7 instance to run up Jenki
 ## Preparations 
 * Create an AWS Red Hat Enterprise Linux 7.2 7.2 instance. Create an EBS volume needed capacity in the same region.
 * Attach the volume to the instance.
-* Create a pem file or say AWS to use existed one.
+* Create a pem file or say AWS to use an existing one.
 * Log in to the instance, set root user (do sudo -s). Go to /etc/sudoers and set requiretty option to false (!requiretty). In ansible.cfg the pipelining option turned on. Enabling pipelining reduces the number of SSH operations required to execute a module on the remote server, by executing many ansible modules without actual file transfer. This can result in a very significant performance improvement when enabled, however when using “sudo:” operations you must first disable ‘requiretty’ in /etc/sudoers on all managed hosts.   
 * Make sure the additional EBS device has /dev/xvdf path, if not change variable pv1 in playbook/lv/vars/main. If you want to use more devices create new variables there and add those variables to playbook/lv/tasks. 
 * Create a tag for tha instance. For example ansible-test. Set this tag to site.yml file in the hosts parametr like tag_<your tag>
