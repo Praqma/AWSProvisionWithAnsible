@@ -1,5 +1,5 @@
 - name: Create user jenkins
-  user: name=jenkins groups=1000,docker home=/home/jenkins shell=/bin/bash generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa append=yes
+  user: name=jenkins groups=wheel,docker home=/home/jenkins shell=/bin/bash generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa append=yes
 - name: Change ownship for /home/jenkins
   become: yes
   shell: chown -R jenkins:jenkins /home/jenkins

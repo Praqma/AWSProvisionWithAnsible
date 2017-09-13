@@ -1,18 +1,34 @@
 ---
-- name: Set new repos to yum docker repo
+- name: install yum-utils
   become: yes
-  lineinfile: dest=/etc/yum.repos.d/docker.repo
-              state=present
-              create=yes
-              insertafter=EOF
-              line={{ item }}
-  with_items:
-    - "[dockerrepo]"
-    - "name=Docker Repository"
-    - "baseurl=https://yum.dockerproject.org/repo/main/centos/7"
-    - "enabled=1"
-    - "gpgcheck=1"
-    - "gpgkey=https://yum.dockerproject.org/gpg"
+  yum: name=yum-utils
+- name: check if container-selinux is installed
+  become: yes
+  shell:  rpm -qa | grep container-selinux
+  register: cn_selinux
+  ignore_errors: yes
+- name: install container-selinux 2.9
+  become: yes
+  command: yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.9-4.el7.noarch.rpm
+  when: cn_selinux.stdout == ""
+- name: docker ce stable repo
+  yum_repository:
+    name: 'docker-ce-stable'
+    # https://stackoverflow.com/questions/42981114/install-docker-ce-17-03-on-rhel7
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    enabled: yes
+    description: Docker CE Stable repo
+    gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
+#- name: setup docker CE repo
+#  become: yes
+#  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+- name: Ensure the yum package index is up to date
+  become: yes
+  yum:
+    update_cache: yes
+    name: '*'
+    state: latest
 - name: Yum update
   become: yes
   yum: name=* state=latest
@@ -21,11 +37,11 @@
   yum: name=git
 - name: Install docker
   become: yes
-  yum: name=docker-engine
+  yum: name=docker-ce
 - name: Install docker-compose
   become: yes
   get_url: 
-      url : https://github.com/docker/compose/releases/download/1.7.0/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+      url : https://github.com/docker/compose/releases/download/1.16.1/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
       dest: /usr/local/bin/docker-compose
       mode: 'u+x,g+x'
 - name: Start docker

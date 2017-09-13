@@ -6,3 +6,14 @@
     - lv
     - config
     - user
+- name: a play that runs entirely on the host
+  hosts: 127.0.0.1
+  connection: local
+  user: a259888
+  sudo: true
+  roles:
+    - tools
+    - lv
+    - config
+    - user
+

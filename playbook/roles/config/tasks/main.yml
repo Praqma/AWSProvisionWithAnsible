@@ -17,9 +17,15 @@
     - "[Service]"
     - "ExecStart="
     - "ExecStart=/usr/bin/dockerd --debug --storage-driver=devicemapper --storage-opt dm.thinpooldev=/dev/mapper/docker-thinpool --storage-opt dm.use_deferred_removal=true"
+- name: check if /var/lib/docker is mounted
+  become: yes
+  shell: lsblk | grep '/home/jenkins'
+  register: jenkins_home
+  ignore_errors: yes
 - name: remove /var/lib/docker
   become: yes
   file: path=/var/lib/docker state=absent
+  when: jenkins_home.stdout == ""
 - name: Mount docker-data disk to /var/lib/docker
   become: yes
   mount: 

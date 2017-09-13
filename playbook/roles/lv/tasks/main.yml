@@ -16,10 +16,15 @@
 - name: Create thinpool
   become: yes
   lvol: vg={{ vgroup }} lv=thinpool size=70%VG opts="--wipesignatures y" 
+- name: check for existence of thinpool
+  become: yes
+  shell:  lvs -o +devices | grep thinpool_tdata
+  register: tdata_here
+  ignore_errors: yes
 - name: Convert docker/thinpool to the thinpool
   become: yes
   shell: lvconvert -y --zero n --chunksize 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
-  when: convert
+  when: tdata_here.stdout == ""
 - name: Set a rule for the thinpool
   become: yes
   lineinfile: dest=/etc/lvm/profile/docker-thinpool.profile
