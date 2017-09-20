@@ -18,9 +18,9 @@ Docker-ee can be installed with a few tweaks
 
 ## How to use the setup
 - Clone the project to your local machine. 
-- Change the values in hosts.ini to match your access credentials
-- Run cleanup.sh to cleanup the effect of a previous installation run. Look at the commands in cleanup.sh to be sure they target the right resources
-- Copy your *.pem file to the project root directory. Go to provision.sh and change the name of pem file.
+- Enter the target dns name or IP addresses and modify the credentials placeholder to match your credentials, in hosts.ini.
+- Run cleanup.sh to cleanup the effect of a previous installation run. Inspect the commands in cleanup.sh to be sure that they target the right resources
+- Copy your *.pem file(private key file) to the project root directory.
 Run the ansible playbook:
 - for remote provisioning -
 ```
