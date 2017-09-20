@@ -1,6 +1,4 @@
 - hosts: ansible_test
-  user: a259888
-  connection: ssh
   sudo: true
   roles: 
     - tools
