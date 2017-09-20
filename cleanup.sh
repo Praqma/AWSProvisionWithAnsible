@@ -1,3 +1,5 @@
+echo "Pleas look in the cleanup file to be sure the right resources are being targeted. Feel free to add to or remove from the list if you know what you are doing"
+
 yum -y remove docker*
 sleep 5
 umount /var/lib/docker
