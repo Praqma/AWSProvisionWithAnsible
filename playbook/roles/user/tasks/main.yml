@@ -3,6 +3,26 @@
 - name: Change ownship for /home/jenkins
   become: yes
   shell: chown -R jenkins:jenkins /home/jenkins
+
+- name: proxy settings for user jenkins
+  become_user: jenkins
+  lineinfile: dest=/home/jenkins/.bashrc
+              state=present
+              create=yes
+              insertafter=EOF
+              line={{ item }}
+  with_items:
+  - "export http_proxy=http://httppxgot.srv.volvo.com:8080"
+  - "export https_proxy=https://httppxgot.srv.volvo.com:8080"
+  - "export no_proxy=localhost,127.0.0.1,.volvo.net"
+  - "export JAVA_OPTS='-Dhttp.proxyHost=http://httppxgot.srv.volvo.com:8080 -Dhttp.proxyPort=8080 -Dhttps.proxyHost=https://httppxgot.srv.volvo.com:8080 -Dhttps.proxyPort=8080 -Dhttp.nonProxyHosts=localhost,127.0.0.1,.volvo.net'"
+  - "umask 022"
+- name: source proxy environment variables for jenkins
+  become_user: jenkins
+  shell: source /home/jenkins/.bashrc
+  ignore_errors: yes
+
+
 - name: Restart docker
   become: yes
   service: name=docker state=restarted
