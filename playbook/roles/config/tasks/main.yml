@@ -6,6 +6,25 @@
 - name: Stop docker service
   become: yes
   command: systemctl stop docker
+- name: check for docker.service.d directory
+  become: yes
+  stat: path=/etc/systemd/system/docker.service.d
+  register: service_d
+
+- name: create docker systemctl service directory
+  become: yes
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  when: service_d.stat.exists == False  
+
+- name: create docker proxy file
+  become: yes
+  lineinfile: dest=/etc/systemd/system/docker.service.d/http-proxy.conf
+              state=present
+              create=yes
+              insertafter=EOF
+              line="Environment='HTTP_PROXY=http://httppxgot.srv.volvo.com:8080' 'HTTPS_PROXY=http://httppxgot.srv.volvo.com:8080' 'NO_PROXY=localhost,127.0.0.1,.volvo.net'"
 - name: Configure docker to use new device driver
   become: yes
   lineinfile: dest=/etc/systemd/system/docker.service.d/docker.conf
@@ -17,6 +36,7 @@
     - "[Service]"
     - "ExecStart="
     - "ExecStart=/usr/bin/dockerd --debug --storage-driver=devicemapper --storage-opt dm.thinpooldev=/dev/mapper/docker-thinpool --storage-opt dm.use_deferred_removal=true"
+
 - name: check if /var/lib/docker is mounted
   become: yes
   shell: lsblk | grep '/home/jenkins'
@@ -40,6 +60,7 @@
     src: /dev/docker/jenkins-home
     state: mounted
     fstype: ext4
+
 - name: Reload daemon
   become: yes
   command: systemctl daemon-reload
