@@ -1,4 +1,23 @@
 ---
+- name: check that in .bashrc that http_proxy, https_proxy, no_proxy are set and exported for use from commandline. 
+  become: yes
+  shell: cat ~/.bashrc | grep 'export http_proxy'
+  register: http_proxies
+  ignore_errors: yes
+- name: set http_proxy, https_proxy and no_proxy
+  become: yes
+  lineinfile: dest={{ item[1] }}
+              state=present
+              create=yes
+              insertafter=EOF
+              line={{ item[0] }}
+  with_items:
+  - ['export http_proxy=http://httppxgot.srv.volvo.com:8080', 'export https_proxy=https://httppxgot.srv.volvo.com:8080', 'export no_proxy=localhost,127.0.0.1,.volvo.net']
+  - ['~/.bashrc', '/root/.bashrc']
+  when: http_proxies.stdout.find('.volvo.com') != -1
+- name: source .bashrc to set proxy environment variables
+  become: yes
+  shell: source ~/.bashrc
 - name: install yum-utils
   become: yes
   yum: name=yum-utils
