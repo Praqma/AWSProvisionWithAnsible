@@ -1,3 +1,13 @@
+- hosts: all
+  sudo: true
+  tasks:
+  - name: check if proxy is set in /etc/yum.conf
+    shell: cat /etc/yum.conf | grep proxy
+    register: proxy_out
+    ignore_errors: true
+  - name: set proxy if absent
+    shell: echo "proxy=https://httppxgot.srv.volvo.com:8080" >> /etc/yum.conf
+    when: proxy_out.stdout.find('.volvo.com') != -1
 - hosts: jenkins_slaves
   sudo: true
   roles: 
@@ -7,7 +17,6 @@
     - user
 # this play runs entirely on the host
 - hosts: local
-  user: yourusername
   sudo: true
   roles:
     - tools
