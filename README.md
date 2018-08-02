@@ -1,3 +1,7 @@
+---
+maintainer: emilybache
+---
+
 # AWS provisioning with Ansible
 Here is Ansible setup helps you prepare your AWS RHEL 7 instance to run up JenkinsAsACode project.
 * Create logical group and volumes on the EBS volume
